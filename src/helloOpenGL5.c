@@ -1,6 +1,10 @@
 #include <GL/glut.h>
 
 static GLint rotate = 0;
+static GLint incremento = 1.0;
+static GLchar eje = 'a';
+static GLfloat rotaY = 0.5;
+static GLfloat rotaZ = 0.5;
 
 void render () { 
   /* Limpieza de buffers */
@@ -12,6 +16,12 @@ void render () {
   
   /* En color blanco */
   glColor3f( 1.0, 1.0, 1.0 );  
+  if (eje == 'y'){
+    glRotatef(rotate, 0.0, rotaY, 0.0);
+  } else if (eje == 'z'){
+    glRotatef(rotate, 0.0, 0.0, rotaZ);
+  }
+
   /* Renderiza la tetera */
   glutWireTeapot(1.5);
   /* Intercambio de buffers... Representation ---> Window */
@@ -32,6 +42,35 @@ void resize (int w, int h) {
   glMatrixMode(GL_MODELVIEW);
 }
 
+void rotar() {
+  rotate = (rotate + incremento) % 360;
+  glutPostRedisplay();
+}
+
+void teclado(unsigned char key, int x, int y){
+  if (key == 'y'){
+    eje = 'y';
+    glutIdleFunc(rotar);
+  } else if (key == 'z'){
+    eje = 'z';
+    glutIdleFunc(rotar);    
+  } else if (key == 's'){
+    glutIdleFunc(NULL);    
+  }
+}
+
+void flechas(int key, int x, int y){
+  if (key == GLUT_KEY_RIGHT){
+    rotaY = 0.5;
+    rotaZ = 0.5;
+    glutIdleFunc(rotar);
+  } else if (key == GLUT_KEY_LEFT){
+    rotaY = -0.5;
+    rotaZ = -0.5;
+    glutIdleFunc(rotar);
+  }
+}
+
 int main (int argc, char* argv[]) { 
   glutInit( &argc, argv ); 
   glutInitDisplayMode( GLUT_RGB | GLUT_DOUBLE ); 
@@ -41,7 +80,9 @@ int main (int argc, char* argv[]) {
   
   /* Registro de funciones de retrollamada */
   glutDisplayFunc(render); 
-  glutReshapeFunc(resize); 
+  glutReshapeFunc(resize);
+  glutKeyboardFunc(teclado);
+  glutSpecialFunc(flechas);
   
   /* Bucle de renderizado */
   glutMainLoop();  

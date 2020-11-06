@@ -1,5 +1,7 @@
 #include <GL/glut.h>
 
+static int colorChange = 0;
+
 /* Función de renderizado */
 void render () {
   /* Limpieza de buffers */
@@ -10,16 +12,28 @@ void render () {
   glTranslatef(0.0, 0.0, -4.0);
 
   /* Renderiza un triángulo blanco */
-  glColor3f(1.0, 1.0, 1.0);
   glBegin(GL_TRIANGLES);
-  glVertex3f(0.0, 1.0, 0.0);
-  glVertex3f(-1.0, -1.0, 0.0);
-  glVertex3f(1.0, -1.0, 0.0);
-  glEnd();
-
+  if(colorChange%2 == 0){
+    glColor3f(1.0, 0.0, 0.0);
+    glVertex3f(0.0, 1.0, 0.0);
+    glColor3f(0.0, 1.0, 0.0);
+    glVertex3f(-1.0, -1.0, 0.0);
+    glColor3f(0.0, 0.0, 1.0);
+    glVertex3f(1.0, -1.0, 0.0);
+    glEnd();
+  }else{
+    glColor3f(1.0, 1.0, 1.0);
+    glVertex3f(0.0, 1.0, 0.0);
+    glVertex3f(-1.0, -1.0, 0.0);
+    glVertex3f(1.0, -1.0, 0.0);
+    glEnd();
+  }
   /* Intercambio de buffers */
   glutSwapBuffers();
-}
+  
+  /* Redibujar fotograma */
+  glutPostRedisplay();
+  }
 
 void resize (int w, int h) {
   /* Definición del viewport */
@@ -33,6 +47,25 @@ void resize (int w, int h) {
 
   /* Vuelta a transform. modelo */
   glMatrixMode(GL_MODELVIEW);
+}
+
+void teclado(unsigned char key, int x, int y) {
+    if(key == 'c'){
+    ++colorChange;
+    glutPostRedisplay();
+  }
+}
+
+void processMenuEvents(int id){
+  switch(id){
+    case 0:
+      colorChange *= 2;
+      break;
+    case 1:
+      colorChange *= 2;
+      ++colorChange;
+      break;
+  }
 }
 
 void init (void) {
@@ -53,6 +86,11 @@ int main(int argc, char *argv[]) {
   /* Registro de funciones de retrollamada */
   glutDisplayFunc(render);
   glutReshapeFunc(resize);
+  glutKeyboardFunc(teclado);
+  glutCreateMenu(processMenuEvents);
+  glutAddMenuEntry("Colores", 0);
+  glutAddMenuEntry("Blanco", 1);
+  glutAttachMenu(GLUT_RIGHT_BUTTON);
 
   /* Bucle de renderizado */
   glutMainLoop();

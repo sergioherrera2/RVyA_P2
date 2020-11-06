@@ -1,9 +1,11 @@
 #include <GL/glut.h>
 
 #define DIST_TIERRA 3
+#define DIST_LUNA 1
 
 static GLfloat tierra_rotacion = 0.0;
 static GLfloat tierra_orbita = 0.0;
+static GLfloat luna_orbita = 0.0;
 
 void render () { 
   /* Limpieza de buffers */
@@ -26,6 +28,13 @@ void render () {
   glColor3ub (0, 0, 255);
   glutWireSphere (0.3, 8, 8);
 
+  glTranslatef(DIST_LUNA, 0.0, 0.0);
+  glRotatef(luna_orbita, 0.0, 0.0, 1.0);
+
+  /* Renderiza una luna roja */
+  glColor3ub (255, 0, 0);
+  glutWireSphere (0.15, 8, 8);
+
   /* Intercambio de buffers... Representation ---> Window */
   glutSwapBuffers();      
 } 
@@ -47,6 +56,7 @@ void resize (int w, int h) {
 void update (unsigned char key, int x, int y) { 
   tierra_orbita += 0.2;
   tierra_rotacion += 5.8;
+  luna_orbita += 0.1;
   /* Fuerza re-dibujado */
   glutPostRedisplay();
 }
